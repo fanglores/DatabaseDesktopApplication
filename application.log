@@ -1,0 +1,6 @@
+09:52:06.364	INFO	main::<module>	Logging has started
+09:52:06.364	INFO	main::<module>	Errors Tracing Application v0.1_dev, Moscow Aviation Institue, 2023
+09:52:06.405	INFO	main::new_session	Screen size is 1920x1080
+09:52:06.406	ERROR	main::new_session	arguments did not match any overloaded call:
+  setGeometry(self, a0: QRect): argument 1 has unexpected type 'float'
+  setGeometry(self, ax: int, ay: int, aw: int, ah: int): argument 1 has unexpected type 'float'
