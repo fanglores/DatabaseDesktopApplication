@@ -28,16 +28,22 @@ def new_session():
         logging.info("Screen size is {}x{}".format(w, h))
 
         database = Database()
-        loginWindow = LoginWindow(w, h, database)
-        mainWindow = MainWindow(w, h)
 
-        # CRITICAL if closed skips to next window
+        if(DEBUG_BUILD):
+            database.username = 'Konstantin.Tsaturyan'
+            mainWindow = MainWindow(w, h, database)
+            mainWindow.show()
+            app.exec()
+            exit()
+
+        loginWindow = LoginWindow(w, h, database)
         loginWindow.show()
         app.exec()
 
         if database.conn == None:
             raise Exception('Connection failed or incorrect credentials')
 
+        mainWindow = MainWindow(w, h, database.username)
         mainWindow.show()
         app.exec()
 

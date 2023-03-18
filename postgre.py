@@ -15,6 +15,7 @@ class Database:
 
             if(DEBUG_BUILD):
                 if (username_ == 'user' and password_ == 'user') or (username_ == 'admin' and password_ == 'admin'):
+                    self.conn = 0
                     return resultOk
                 else:
                     raise DatabaseError('Incorrect credentials')
@@ -33,6 +34,10 @@ class Database:
         except Exception as e:
             logging.error(type(e).__name__ + ": " + str(e))
             return resultFail
+
+    def processQuery(self, queryString):
+        raise NotImplemented()
+        # process query and return result as array
 
     def __del__(self):
         try:
