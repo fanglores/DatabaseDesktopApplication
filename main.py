@@ -35,6 +35,9 @@ def new_session():
         loginWindow.show()
         app.exec()
 
+        if database.conn == None:
+            raise Exception('Connection failed or incorrect credentials')
+
         mainWindow.show()
         app.exec()
 

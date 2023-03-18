@@ -5,9 +5,9 @@ from runtimeConstants import TITLE_POSTFIX, resultOk
 
 class LoginWindow(QWidget):
     title = 'Login'
-    sizeX = 300
-    sizeY = 150
-    
+    sizeX = 600
+    sizeY = 300
+
     # window setup
     def __init__(self, screenWidth, screenHeight, db):
         try:
@@ -28,26 +28,26 @@ class LoginWindow(QWidget):
         try:
             # Create labels of input fields
             username_label = QLabel('Username:', self)
-            username_label.move(20, 20)
+            username_label.move(100, 50)
             password_label = QLabel('Password:', self)
-            password_label.move(20, 50)
+            password_label.move(100, 100)
 
             # Create label for incorrect password
             self.login_label = QLabel('Password is incorrect!', self)
             self.login_label.setHidden(True)
             self.login_label.setStyleSheet("color: rgb(255,0,0)")
-            self.login_label.move(self.sizeX//4 + 25, self.sizeY//2)
+            self.login_label.move(220, self.sizeY//2)
 
             # Create input field
             self.username_input = QLineEdit(self)
-            self.username_input.setGeometry(100, 20, self.sizeX//2, self.sizeY//8)
+            self.username_input.setGeometry(200, 50, 300, 25)
             self.password_input = QLineEdit(self)
-            self.password_input.setGeometry(100, 50, self.sizeX//2, self.sizeY//8)
+            self.password_input.setGeometry(200, 100, 300, 25)
             self.password_input.setEchoMode(QLineEdit.Password)
 
             # Create login button
             login_button = QPushButton('Login', self)
-            login_button.setGeometry(self.sizeX//4, self.sizeY*5//8, self.sizeX//2, self.sizeY//4)
+            login_button.setGeometry(self.sizeX//4, self.sizeY*10//16, self.sizeX//2, 75)
             login_button.clicked.connect(self.__login)
         
         except Exception as e:

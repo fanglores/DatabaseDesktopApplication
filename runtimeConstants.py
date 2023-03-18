@@ -10,7 +10,7 @@ LOG_FORMAT          =   '%(asctime)s.%(msecs)03d\t%(levelname)s\t%(module)s.py::
 TIME_FORMAT         =   '%H:%M:%S'
 LOGFILE_PATH        =   'application.log'
 
-# database constants
+# database credentials constants
 DATABASE_NAME       =   'temp_dbname'
 DATABASE_HOST       =   'localhost'
 
