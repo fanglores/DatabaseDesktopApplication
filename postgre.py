@@ -1,9 +1,18 @@
+import enum
 from sqlite3 import DatabaseError
 import psycopg2
 import logging
+import enum
 
 from runtimeConstants import DATABASE_HOST, DATABASE_NAME, DEBUG_BUILD, resultFail, resultOk
 
+
+class QueryType(enum.Enum):
+    select  =   'SELECT'
+    update  =   'UPDATE'
+    insert  =   'INSERT'
+    delete  =   'DELETE'
+    none    =   None
 
 class Database:
     conn = None

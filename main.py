@@ -30,6 +30,7 @@ def new_session():
         database = Database()
 
         if(DEBUG_BUILD):
+            logging.critical('test logic and data!')
             database.username = 'Konstantin.Tsaturyan'
             mainWindow = MainWindow(w, h, database)
             mainWindow.show()

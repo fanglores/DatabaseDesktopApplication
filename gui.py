@@ -1,7 +1,10 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton
 import logging
 
-from runtimeConstants import TITLE_POSTFIX, resultOk, resultFail
+from runtimeConstants import TITLE_POSTFIX
+from postgre import QueryType
+from reporter import ExcelReporter
+
 
 class MainWindow(QWidget):
     title = "Workspace"
@@ -36,29 +39,35 @@ class MainWindow(QWidget):
 
             # buttons
             # print button
-            print_button = QPushButton('Login', self)
-            print_button.setGeometry(self.sizeX // 4, self.sizeY * 10 // 16, self.sizeX // 2, 75)
+            print_button = QPushButton('Print', self)
+            print_button.setGeometry(1050, 720, 120, 50)
             print_button.clicked.connect(self.__printTable)
 
         except Exception as e:
             logging.error(type(e).__name__ + ": " + str(e))
 
-    def __createQuery(self):
-        raise NotImplemented()
-        # ask buttons for its values
-        # create string query depends on type of button?
+    def __processQuery(self, queryType=QueryType.none):
+        try:
+            if queryType == QueryType.none:
+                raise RuntimeError('Query type is not defined!')
 
-    def __sendQuery(self):
-        raise NotImplemented()
-        params = self.__createQuery()
-        self.database.processQuery(params)
-        # send result data
+            # fill formatting with buttons values; create template in postgre
+            query = queryType.value.format()
+            return self.database.processQuery(query)
+
+        except Exception as e:
+            logging.error(type(e).__name__ + ": " + str(e))
 
     def __printTable(self):
-        raise NotImplemented()
-        self.__sendQuery()
-        # ask DB for data? or take it from local table?
-        # create xls file and insert fields
+        try:
+            reportWriter = ExcelReporter()
+            # data = self.__processQuery(queryType='SELECT')
+            logging.critical('test data!')
+            data = ['test_program_name', 'test_author_name', 'true', 'true', 'false', 'false', 'false', '01.01.2001', '02.02.2002']
+            reportWriter.write(data)
+
+        except Exception as e:
+            logging.error(type(e).__name__ + ": " + str(e))
 
     def __del__(self):
         try:
