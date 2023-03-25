@@ -2,7 +2,7 @@ DEBUG_BUILD         =   True
 
 # application constants
 APPLICATION_NAME    =   "Errors Tracing Application"
-VERSION             =   "v0.1" + ("_dev" if DEBUG_BUILD else "")
+VERSION             =   "v1.0" + ("_dev" if DEBUG_BUILD else "")
 TITLE_POSTFIX       =   " - {} {}".format(APPLICATION_NAME, VERSION)
 
 # logging constants

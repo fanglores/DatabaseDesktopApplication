@@ -8,9 +8,10 @@ from runtimeConstants import DATABASE_HOST, DATABASE_NAME, DEBUG_BUILD, resultFa
 
 
 class QueryType(enum.Enum):
-    select  =   'SELECT'
+    select  =   'SELECT * from ErrorsTable WHERE (...)'
+    selectAll = 'SELECT * from ErrorsTable'
     update  =   'UPDATE'
-    insert  =   'INSERT'
+    insert  =   'INSERT INTO ErrorsTable VALUES (\'{}\', \'{}\', {}, {}, {}, {}, {}, \'{}\', \'{}\')'
     delete  =   'DELETE'
     none    =   None
 
@@ -45,8 +46,13 @@ class Database:
             return resultFail
 
     def processQuery(self, queryString):
-        raise NotImplemented()
-        # process query and return result as array
+        try:
+            logging.info('Processing query')
+            result = self.cursor.execute(queryString)
+            self.conn.commit()
+            return result
+        except Exception as e:
+            logging.error(type(e).__name__ + ": " + str(e))
 
     def __del__(self):
         try:

@@ -39,9 +39,22 @@ class ExcelReporter:
             logging.error(type(e).__name__ + ": " + str(e))
 
     def __write_data(self, data):
-        logging.info('Writing data to excel sheet')
-        pass
-        # insert each data
+        try:
+            logging.info('Writing data to excel sheet')
+            i = 2
+            for item in data:
+                self.__insert_value(f"A{i}", value=str(item[0]))
+                self.__insert_value(f"B{i}", value=str(item[1]))
+                self.__insert_value(f"C{i}", value=str(item[2]))
+                self.__insert_value(f"D{i}", value=str(item[3]))
+                self.__insert_value(f"E{i}", value=str(item[4]))
+                self.__insert_value(f"F{i}", value=str(item[5]))
+                self.__insert_value(f"G{i}", value=str(item[6]))
+                self.__insert_value(f"H{i}", value=str(item[7]))
+                self.__insert_value(f"I{i}", value=str(item[8]))
+                i += 1
+        except Exception as e:
+            logging.error(type(e).__name__ + ": " + str(e))
 
     def __insert_value(self, cell_name, value):
         try:
@@ -51,7 +64,6 @@ class ExcelReporter:
         except Exception as e:
             logging.error(type(e).__name__ + ": " + str(e))
 
-    # TODO: add optinon for definind a save path?
     def __save_book(self):
         try:
             logging.info('Saving the excel file')
@@ -61,14 +73,14 @@ class ExcelReporter:
 
     def __write_header(self):
         try:
-            self.__insert_value("A2", value='Имя автора')
-            self.__insert_value("B2", value='Название программы')
-            self.__insert_value("C2", value="Важна")
-            self.__insert_value("D2", value="Активна")
-            self.__insert_value("E2", value="Отложена")
-            self.__insert_value("F2", value="Нестабильна")
-            self.__insert_value("G2", value="Устранена")
-            self.__insert_value("H2", value="Дата обнаружения")
-            self.__insert_value("I2", value="Дата устранения")
+            self.__insert_value("A1", value='Имя автора')
+            self.__insert_value("B1", value='Название программы')
+            self.__insert_value("C1", value="Важна")
+            self.__insert_value("D1", value="Активна")
+            self.__insert_value("E1", value="Отложена")
+            self.__insert_value("F1", value="Нестабильна")
+            self.__insert_value("G1", value="Устранена")
+            self.__insert_value("H1", value="Дата обнаружения")
+            self.__insert_value("I1", value="Дата устранения")
         except Exception as e:
             logging.error(type(e).__name__ + ": " + str(e))
