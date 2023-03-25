@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QCheckBox, QDateEdit
 import logging
 
 from runtimeConstants import TITLE_POSTFIX
@@ -29,13 +29,59 @@ class MainWindow(QWidget):
     def __initUI(self):
         try:
             # username
-            username_label = QLabel('Username:', self)
-            username_label.move(20, 20)
+            self.username_label = QLabel('Username:', self)
+            self.username_label.move(20, 20)
             self.username_value = QLineEdit(self)
             self.username_value.setGeometry(120, 20, 200, 25)
             self.username_value.setText(self.username)
             self.username_value.setReadOnly(True)
             self.username_value.setStyleSheet("background-color: rgb(180,180,180)")
+            # TODO make flip readonly as func(obj, stateTo)
+
+            # input labels
+            # line edit ProgramName
+            self.programName_label = QLabel('Program:', self)
+            self.programName_label.move(20, 60)
+            self.programName_value = QLineEdit(self)
+            self.programName_value.setGeometry(120, 60, 200, 25)
+
+            # Checkbox is important
+            self.isImportant_value = QCheckBox('is important', self)
+            self.isImportant_value.move(120, 100)
+
+            # Checkbox is active
+            self.isActive_value = QCheckBox('is active', self)
+            self.isActive_value.move(120, 130)
+
+            # Checkbox is delayed
+            self.isDelayed_value = QCheckBox('is delayed', self)
+            self.isDelayed_value.move(120, 160)
+
+            # Checkbox is unstable
+            self.isUnstable_value = QCheckBox('is unstable', self)
+            self.isUnstable_value.move(120, 190)
+
+            # Checkbox is fixed
+            self.isFixed_value = QCheckBox('is fixed', self)
+            self.isFixed_value.move(120, 220)
+
+            # datetime found date
+            self.foundDate_label = QLabel('Found date:', self)
+            self.foundDate_label.move(20, 263)
+            self.foundDate_value = QDateEdit(self)
+            self.foundDate_value.move(120, 260)
+            if not self.isActive_value.isChecked():
+                self.foundDate_value.setReadOnly(True)
+                self.foundDate_value.setStyleSheet("background-color: rgb(180,180,180)")
+
+            # datetime? fixed date
+            self.fixedDate_label = QLabel('Fixed date:', self)
+            self.fixedDate_label.move(20, 306)
+            self.fixedDate_value = QDateEdit(self)
+            self.fixedDate_value.move(120, 300)
+            if not self.isActive_value.isChecked():
+                self.fixedDate_value.setReadOnly(True)
+                self.fixedDate_value.setStyleSheet("background-color: rgb(180,180,180)")
 
             # buttons
             # print button
