@@ -15,7 +15,7 @@ else:
                         format=LOG_FORMAT, datefmt=TIME_FORMAT)
 
 logging.info("Logging has started")
-logging.info("Errors Tracing Application {}, Moscow Aviation Institue, 2023".format(VERSION))
+logging.info("Errors Tracing Application {}, Moscow Aviation Institute, 2023".format(VERSION))
 
 
 def new_session():
