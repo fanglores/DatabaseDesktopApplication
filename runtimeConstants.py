@@ -11,7 +11,7 @@ TIME_FORMAT         =   '%H:%M:%S'
 LOGFILE_PATH        =   'application.log'
 
 # database credentials constants
-DATABASE_NAME       =   'temp_dbname'
+DATABASE_NAME       =   'ErrorsTracingDatabase'
 DATABASE_HOST       =   'localhost'
 
 # result codes

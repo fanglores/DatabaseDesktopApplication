@@ -8,11 +8,11 @@ from runtimeConstants import DATABASE_HOST, DATABASE_NAME, DEBUG_BUILD, resultFa
 
 
 class QueryType(enum.Enum):
-    select  =   'SELECT * from ErrorsTable WHERE (...)'
-    selectAll = 'SELECT * from ErrorsTable'
-    update  =   'UPDATE'
-    insert  =   'INSERT INTO ErrorsTable VALUES (\'{}\', \'{}\', {}, {}, {}, {}, {}, \'{}\', \'{}\')'
-    delete  =   'DELETE'
+    select  =   'SELECT * FROM public.\"ErrorsTable\" WHERE (...);'
+    selectAll = 'SELECT * FROM public.\"ErrorsTable\";'
+    update  =   'UPDATE public.\"ErrorsTable\" SET ... WHERE id = {};'
+    insert  =   'INSERT INTO public.\"ErrorsTable\" (author_name, program_name, \"isActive\", \"isFixed\", \"isImportant\", \"isDelayed\", \"isUnstable\", found_date, fixed_date) VALUES (\'{}\', \'{}\', {}, {}, {}, {}, {}, \'{}\', \'{}\');'
+    delete  =   'DELETE WHERE id = {};'
     none    =   None
 
 class Database:
@@ -22,13 +22,6 @@ class Database:
     def connect(self, username_, password_):
         try:
             self.username = username_
-
-            if(DEBUG_BUILD):
-                if (username_ == 'user' and password_ == 'user') or (username_ == 'admin' and password_ == 'admin'):
-                    self.conn = 0
-                    return resultOk
-                else:
-                    raise DatabaseError('Incorrect credentials')
 
             self.conn = psycopg2.connect(
                 host=DATABASE_HOST,
@@ -45,14 +38,19 @@ class Database:
             logging.error(type(e).__name__ + ": " + str(e))
             return resultFail
 
-    def processQuery(self, queryString):
+    def processQuery(self, queryType, queryString):
         try:
             logging.info('Processing query')
-            result = self.cursor.execute(queryString)
+            self.cursor.execute(queryString)
             self.conn.commit()
-            return result
+
+            if queryType == QueryType.select or queryType == QueryType.selectAll:
+                return self.cursor.fetchall()
+
         except Exception as e:
             logging.error(type(e).__name__ + ": " + str(e))
+        finally:
+            return None
 
     def __del__(self):
         try:

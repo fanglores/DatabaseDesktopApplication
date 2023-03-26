@@ -82,7 +82,7 @@ class MainWindow(QWidget):
 
             # buttons
             # select button
-            selectAll_button = QPushButton('Request all', self)
+            selectAll_button = QPushButton('Sync data', self)
             selectAll_button.setGeometry(40, 720, 120, 50)
             selectAll_button.clicked.connect(lambda: self.__processQuery(QueryType.selectAll))
             # insert button
@@ -108,6 +108,8 @@ class MainWindow(QWidget):
             print_button.setGeometry(1050, 720, 120, 50)
             print_button.clicked.connect(self.__printTable)
 
+            # BFT - big f table
+            self.data_table = QTableWidget()
         except Exception as e:
             logging.error(type(e).__name__ + ": " + str(e))
 
@@ -146,28 +148,30 @@ class MainWindow(QWidget):
 
             if queryType == QueryType.insert and len(self.programName_value.text()) == 0:
                 logging.warning('No program name for INSERT QueryType')
-                # show an error
+                # TODO show an error
                 return None
 
             query = queryType.value.format(self.username_value.text(), self.programName_value.text(),
                 str(self.isImportant_value.isChecked()), str(self.isActive_value.isChecked()),
                 str(self.isDelayed_value.isChecked()), str(self.isUnstable_value.isChecked()),
-                str(self.isFixed_value.isChecked()), self.foundDate_value.date().toPyDate(),
-                self.fixedDate_value.date().toPyDate())
+                str(self.isFixed_value.isChecked()), str(self.foundDate_value.date().toPyDate()),
+                str(self.fixedDate_value.date().toPyDate()))
 
             logging.info(f'Executing query: {query}')
-            return self.database.processQuery(query)
+            self.last_query_result = self.database.processQuery(queryType, query)
+            logging.debug(f'Query returned: {self.last_query_result}')
         except Exception as e:
+            self.last_data = None
             logging.error(type(e).__name__ + ": " + str(e))
+        finally:
+            # if QueryType is select
+            # TODO self.__writeDataToGuiTable(data)
+            pass
 
-    def __printTable(self):
+    def __createReport(self):
         try:
             reportWriter = ExcelReporter()
-            # data = self.__processQuery(queryType='SELECT')
-            logging.critical('test data!')
-            data = [('test_program_name', 'test_author_name', 'true', 'true', 'false', 'false', 'false', '01.01.2001', '02.02.2002')]
-            reportWriter.write(data)
-
+            reportWriter.write(self.last_data)
         except Exception as e:
             logging.error(type(e).__name__ + ": " + str(e))
 

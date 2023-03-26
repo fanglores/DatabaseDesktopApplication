@@ -1,7 +1,7 @@
 import logging
 from PyQt5.QtWidgets import QApplication
 
-from runtimeConstants import LOGFILE_PATH, DEBUG_BUILD, LOG_FORMAT, TIME_FORMAT, VERSION
+from runtimeConstants import LOGFILE_PATH, DEBUG_BUILD, LOG_FORMAT, TIME_FORMAT, VERSION, resultOk
 from login import LoginWindow
 from postgre import Database
 from gui import MainWindow
@@ -31,7 +31,7 @@ def new_session():
 
         if(DEBUG_BUILD):
             logging.critical('test logic and data!')
-            database.username = 'Konstantin.Tsaturyan'
+            assert database.connect('postgres', 'admin') is resultOk
             mainWindow = MainWindow(w, h, database)
             mainWindow.show()
             app.exec()
@@ -41,10 +41,10 @@ def new_session():
         loginWindow.show()
         app.exec()
 
-        if database.conn == None:
+        if database.conn is None:
             raise Exception('Connection failed or incorrect credentials')
 
-        mainWindow = MainWindow(w, h, database.username)
+        mainWindow = MainWindow(w, h, database)
         mainWindow.show()
         app.exec()
 

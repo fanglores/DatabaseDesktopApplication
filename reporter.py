@@ -75,11 +75,11 @@ class ExcelReporter:
         try:
             self.__insert_value("A1", value='Имя автора')
             self.__insert_value("B1", value='Название программы')
-            self.__insert_value("C1", value="Важна")
-            self.__insert_value("D1", value="Активна")
-            self.__insert_value("E1", value="Отложена")
-            self.__insert_value("F1", value="Нестабильна")
-            self.__insert_value("G1", value="Устранена")
+            self.__insert_value("C1", value="Активна")
+            self.__insert_value("D1", value="Устранена")
+            self.__insert_value("E1", value="Важна")
+            self.__insert_value("F1", value="Отложена")
+            self.__insert_value("G1", value="Нестабильна")
             self.__insert_value("H1", value="Дата обнаружения")
             self.__insert_value("I1", value="Дата устранения")
         except Exception as e:
