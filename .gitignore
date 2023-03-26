@@ -1,7 +1,11 @@
 # Exclude application logs
 *.log
-.idea/*
+.idea/
+.vs/
 env/
+main.spec
+dist/
+build/
 
 ### VisualStudio ###
 ## Ignore Visual Studio temporary files, build results, and
