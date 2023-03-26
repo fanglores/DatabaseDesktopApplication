@@ -11,7 +11,7 @@ class QueryType(enum.Enum):
     select  =   'SELECT * FROM public.\"ErrorsTable\" WHERE (...);'
     selectAll = 'SELECT * FROM public.\"ErrorsTable\";'
     update  =   'UPDATE public.\"ErrorsTable\" SET ... WHERE id = {};'
-    insert  =   'INSERT INTO public.\"ErrorsTable\" (author_name, program_name, \"isActive\", \"isFixed\", \"isImportant\", \"isDelayed\", \"isUnstable\", found_date, fixed_date) VALUES (\'{}\', \'{}\', {}, {}, {}, {}, {}, \'{}\', \'{}\');'
+    insert  =   'INSERT INTO public.\"ErrorsTable\" (author_name, program_name, \"isActive\", \"isFixed\", \"isImportant\", \"isDelayed\", \"isUnstable\", found_date, fixed_date) VALUES (\'{}\', \'{}\', True, False, {}, {}, {}, \'{}\', NULL);'
     delete  =   'DELETE WHERE id = {};'
     none    =   None
 
@@ -42,14 +42,13 @@ class Database:
         try:
             logging.info('Processing query')
             self.cursor.execute(queryString)
-            self.conn.commit()
 
             if queryType == QueryType.select or queryType == QueryType.selectAll:
                 return self.cursor.fetchall()
-
+            else:
+                self.conn.commit()
         except Exception as e:
             logging.error(type(e).__name__ + ": " + str(e))
-        finally:
             return None
 
     def __del__(self):

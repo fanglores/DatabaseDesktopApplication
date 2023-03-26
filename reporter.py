@@ -43,15 +43,15 @@ class ExcelReporter:
             logging.info('Writing data to excel sheet')
             i = 2
             for item in data:
-                self.__insert_value(f"A{i}", value=str(item[0]))
-                self.__insert_value(f"B{i}", value=str(item[1]))
-                self.__insert_value(f"C{i}", value=str(item[2]))
-                self.__insert_value(f"D{i}", value=str(item[3]))
-                self.__insert_value(f"E{i}", value=str(item[4]))
-                self.__insert_value(f"F{i}", value=str(item[5]))
-                self.__insert_value(f"G{i}", value=str(item[6]))
-                self.__insert_value(f"H{i}", value=str(item[7]))
-                self.__insert_value(f"I{i}", value=str(item[8]))
+                self.__insert_value(f"A{i}", value=str(item[1]))
+                self.__insert_value(f"B{i}", value=str(item[2]))
+                self.__insert_value(f"C{i}", value=str(item[3]))
+                self.__insert_value(f"D{i}", value=str(item[4]))
+                self.__insert_value(f"E{i}", value=str(item[5]))
+                self.__insert_value(f"F{i}", value=str(item[6]))
+                self.__insert_value(f"G{i}", value=str(item[7]))
+                self.__insert_value(f"H{i}", value=str(item[8]))
+                self.__insert_value(f"I{i}", value=str(item[9]))
                 i += 1
         except Exception as e:
             logging.error(type(e).__name__ + ": " + str(e))

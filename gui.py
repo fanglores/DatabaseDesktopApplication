@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QCheckBox, QDateEdit, QRadioButton
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QCheckBox, QDateEdit, QRadioButton, QMessageBox, QTableWidget, QTableWidgetItem
 import logging
 import datetime
 
@@ -16,6 +16,8 @@ class MainWindow(QWidget):
         try:
             self.database = database
             self.username = self.database.username
+            self.last_query_result = None
+
             super().__init__()
             self.setWindowTitle(self.title + TITLE_POSTFIX)
             self.move((screenWidth - self.sizeX)//2, (screenHeight - self.sizeY)//2)
@@ -106,10 +108,21 @@ class MainWindow(QWidget):
             # print button
             print_button = QPushButton('Print', self)
             print_button.setGeometry(1050, 720, 120, 50)
-            print_button.clicked.connect(self.__printTable)
+            print_button.clicked.connect(self.__createReport)
 
             # BFT - big f table
-            self.data_table = QTableWidget()
+            self.data_table = QTableWidget(self)
+            self.data_table.setGeometry(350, 20, 800, 650)
+            self.data_table.setColumnCount(10)
+            self.data_table.setHorizontalHeaderLabels(['ID', 'Author', 'Program', 'Active', 'Fixed', 'Important', 'Delayed', 'Unstable', 'Found date', 'Fixed date'])
+            self.data_table.setColumnWidth(0, 50)
+            self.data_table.setColumnWidth(1, 120)
+            self.data_table.setColumnWidth(2, 120)
+            self.data_table.setColumnWidth(3, 50)
+            self.data_table.setColumnWidth(4, 50)
+            self.data_table.setColumnWidth(5, 70)
+            self.data_table.setColumnWidth(6, 50)
+            self.data_table.setColumnWidth(7, 70)
         except Exception as e:
             logging.error(type(e).__name__ + ": " + str(e))
 
@@ -141,37 +154,81 @@ class MainWindow(QWidget):
         except Exception as e:
             logging.error(type(e).__name__ + ": " + str(e))
 
+    def __updateTable(self):
+        try:
+            assert self.last_query_result is not None
+            self.data_table.setRowCount(len(self.last_query_result))
+            for i in range(len(self.last_query_result)):
+                item = self.last_query_result[i]
+                for j in range(10):
+                    self.data_table.setItem(i, j, QTableWidgetItem(str(item[j])))
+        except Exception as e:
+            logging.error(type(e).__name__ + ": " + str(e))
+
+    def __displayMsgBox(self, title, text, icon=QMessageBox.Warning, buttons=QMessageBox.Ok):
+        msgBox = QMessageBox()
+        msgBox.setIcon(icon)
+        msgBox.setWindowTitle(title)
+        msgBox.setText(text)
+        msgBox.setStandardButtons(buttons)
+        msgBox.exec()
+
     def __processQuery(self, queryType=QueryType.none):
         try:
+            self.last_query_result = None
+            query = None
+
             if queryType == QueryType.none:
                 raise RuntimeError('Query type is not defined!')
 
-            if queryType == QueryType.insert and len(self.programName_value.text()) == 0:
-                logging.warning('No program name for INSERT QueryType')
-                # TODO show an error
-                return None
+            if queryType == QueryType.selectAll:
+                query = queryType.value
 
-            query = queryType.value.format(self.username_value.text(), self.programName_value.text(),
-                str(self.isImportant_value.isChecked()), str(self.isActive_value.isChecked()),
-                str(self.isDelayed_value.isChecked()), str(self.isUnstable_value.isChecked()),
-                str(self.isFixed_value.isChecked()), str(self.foundDate_value.date().toPyDate()),
-                str(self.fixedDate_value.date().toPyDate()))
+            if queryType == QueryType.insert:
+                if len(self.programName_value.text()) == 0:
+                    logging.warning('No program name for INSERT QueryType')
+                    self.__displayMsgBox("Warning: missing fields", "Program name must be inserted")
+                    return
+
+                if self.isFixed_value.isChecked():
+                    logging.warning('Cannot insert a fixed error')
+                    self.__displayMsgBox("Error: forbidden action", "Cannot insert a fixed error", QMessageBox.Critical)
+                    return
+
+                query = queryType.value.format(self.username_value.text(), self.programName_value.text(),
+                    str(self.isImportant_value.isChecked()), str(self.isDelayed_value.isChecked()),
+                    str(self.isUnstable_value.isChecked()), str(self.foundDate_value.date().toPyDate()))
+
+            if queryType == QueryType.select:
+                logging.critical(f'Skipping query of type: {queryType}')
+                return
+
+            if queryType == QueryType.update:
+                logging.critical(f'Skipping query of type: {queryType}')
+                return
+
+            if queryType == QueryType.delete:
+                logging.critical(f'Skipping query of type: {queryType}')
+                return
 
             logging.info(f'Executing query: {query}')
             self.last_query_result = self.database.processQuery(queryType, query)
             logging.debug(f'Query returned: {self.last_query_result}')
         except Exception as e:
-            self.last_data = None
             logging.error(type(e).__name__ + ": " + str(e))
         finally:
-            # if QueryType is select
-            # TODO self.__writeDataToGuiTable(data)
+            if queryType == QueryType.selectAll:
+                self.__updateTable()
             pass
 
     def __createReport(self):
         try:
             reportWriter = ExcelReporter()
-            reportWriter.write(self.last_data)
+            assert self.last_query_result is not None
+            reportWriter.write(self.last_query_result)
+        except AssertionError as e:
+            logging.error(type(e).__name__ + ": " + str(e))
+            self.__displayMsgBox("Error: no data", "The data is empty! Try to Sync data first!", QMessageBox.Critical)
         except Exception as e:
             logging.error(type(e).__name__ + ": " + str(e))
 
