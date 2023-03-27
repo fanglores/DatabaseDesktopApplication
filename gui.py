@@ -91,12 +91,6 @@ class MainWindow(QWidget):
             insert_button = QPushButton('Add', self)
             insert_button.setGeometry(300, 720, 120, 50)
             insert_button.clicked.connect(lambda: self.__processQuery(QueryType.insert))
-            # select button
-            # TODO hidden button
-            select_button = QPushButton('Request', self)
-            select_button.setGeometry(450, 720, 120, 50)
-            select_button.clicked.connect(lambda: self.__processQuery(QueryType.select))
-            select_button.hide()
             # update button
             update_button = QPushButton('Update', self)
             update_button.setGeometry(600, 720, 120, 50)
@@ -105,12 +99,14 @@ class MainWindow(QWidget):
             delete_button = QPushButton('Delete', self)
             delete_button.setGeometry(750, 720, 120, 50)
             delete_button.clicked.connect(lambda: self.__processQuery(QueryType.delete))
+            delete_button.hide()
             # print button
             print_button = QPushButton('Print', self)
             print_button.setGeometry(1050, 720, 120, 50)
             print_button.clicked.connect(self.__createReport)
 
             # BFT - big f table
+            logging.debug('init table')
             self.data_table = QTableWidget(self)
             self.data_table.setGeometry(350, 20, 800, 650)
             self.data_table.setColumnCount(10)
@@ -123,6 +119,21 @@ class MainWindow(QWidget):
             self.data_table.setColumnWidth(5, 70)
             self.data_table.setColumnWidth(6, 50)
             self.data_table.setColumnWidth(7, 70)
+            self.data_table.cellClicked.connect(self.__loadRowToGui)
+
+            logging.critical('test data')
+            self.data_table.setRowCount(1)
+            self.data_table.setItem(0, 0, QTableWidgetItem('1'))
+            self.data_table.setItem(0, 1, QTableWidgetItem('author'))
+            self.data_table.setItem(0, 2, QTableWidgetItem('program'))
+            self.data_table.setItem(0, 3, QTableWidgetItem('true'))
+            self.data_table.setItem(0, 4, QTableWidgetItem('false'))
+            self.data_table.setItem(0, 5, QTableWidgetItem('false'))
+            self.data_table.setItem(0, 6, QTableWidgetItem('false'))
+            self.data_table.setItem(0, 7, QTableWidgetItem('true'))
+            self.data_table.setItem(0, 8, QTableWidgetItem('08.02.01'))
+            self.data_table.setItem(0, 9, QTableWidgetItem('09.03.02'))
+            logging.critical('test data end')
         except Exception as e:
             logging.error(type(e).__name__ + ": " + str(e))
 
@@ -165,13 +176,32 @@ class MainWindow(QWidget):
         except Exception as e:
             logging.error(type(e).__name__ + ": " + str(e))
 
+    def __str2bool(self, str):
+        return bool(str.lower() is 'true')
+
+    def __loadRowToGui(self, row):
+        try:
+            self.programName_value.setText(self.data_table.item(row, 2).text())
+            self.isActive_value.setChecked(self.__str2bool(self.data_table.item(row, 3).text()))
+            self.isFixed_value.setChecked(self.__str2bool(self.data_table.item(row, 4).text()))
+            self.isImportant_value.setChecked(self.__str2bool(self.data_table.item(row, 5).text()))
+            self.isDelayed_value.setChecked(self.__str2bool(self.data_table.item(row, 6).text()))
+            self.isUnstable_value.setChecked(self.__str2bool(self.data_table.item(row, 7).text()))
+            self.foundDate_value.setDate(self.data_table.item(row, 8).text())
+            self.fixedDate_value.setDate(self.data_table.item(row, 9).text())
+        except Exception as e:
+            logging.error(type(e).__name__ + ": " + str(e))
+
     def __displayMsgBox(self, title, text, icon=QMessageBox.Warning, buttons=QMessageBox.Ok):
-        msgBox = QMessageBox()
-        msgBox.setIcon(icon)
-        msgBox.setWindowTitle(title)
-        msgBox.setText(text)
-        msgBox.setStandardButtons(buttons)
-        msgBox.exec()
+        try:
+            msgBox = QMessageBox()
+            msgBox.setIcon(icon)
+            msgBox.setWindowTitle(title)
+            msgBox.setText(text)
+            msgBox.setStandardButtons(buttons)
+            msgBox.exec()
+        except Exception as e:
+            logging.error(type(e).__name__ + ": " + str(e))
 
     def __processQuery(self, queryType=QueryType.none):
         try:
@@ -181,10 +211,10 @@ class MainWindow(QWidget):
             if queryType == QueryType.none:
                 raise RuntimeError('Query type is not defined!')
 
-            if queryType == QueryType.selectAll:
+            elif queryType == QueryType.selectAll:
                 query = queryType.value
 
-            if queryType == QueryType.insert:
+            elif queryType == QueryType.insert:
                 if len(self.programName_value.text()) == 0:
                     logging.warning('No program name for INSERT QueryType')
                     self.__displayMsgBox("Warning: missing fields", "Program name must be inserted")
@@ -199,15 +229,21 @@ class MainWindow(QWidget):
                     str(self.isImportant_value.isChecked()), str(self.isDelayed_value.isChecked()),
                     str(self.isUnstable_value.isChecked()), str(self.foundDate_value.date().toPyDate()))
 
-            if queryType == QueryType.select:
+            elif queryType == QueryType.select:
                 logging.critical(f'Skipping query of type: {queryType}')
                 return
 
-            if queryType == QueryType.update:
-                logging.critical(f'Skipping query of type: {queryType}')
-                return
+            elif queryType == QueryType.update:
+                if self.data_table.currentRow() is None:
+                    self.__displayMsgBox('Error: no entry selected', 'Select an entry to update from table',QMessageBox.Critical)
+                    raise IndexError('Row from table was not selected')
+                query = queryType.value.format(self.username_value.text(), self.programName_value.text(),
+                    str(self.isActive_value.isChecked()), str(self.isFixed_value.isChecked()),
+                    str(self.isImportant_value.isChecked()), str(self.isDelayed_value.isChecked()),
+                    str(self.isUnstable_value.isChecked()), str(self.foundDate_value.date().toPyDate()),
+                    str(self.fixedDate_value.date().toPyDate()), str(self.data_table.currentRow()[0]))
 
-            if queryType == QueryType.delete:
+            elif queryType == QueryType.delete:
                 logging.critical(f'Skipping query of type: {queryType}')
                 return
 

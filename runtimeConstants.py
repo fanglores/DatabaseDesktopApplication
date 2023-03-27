@@ -1,4 +1,4 @@
-DEBUG_BUILD         =   False
+DEBUG_BUILD         =   True
 
 # application constants
 APPLICATION_NAME    =   "Errors Tracing Application"
