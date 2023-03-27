@@ -271,7 +271,7 @@ class MainWindow(QWidget):
     def __createReport(self):
         try:
             reportWriter = ExcelReporter()
-            assert self.last_query_result is not None
+            self.__processQuery(QueryType.selectAll)
             reportWriter.write(self.last_query_result)
         except AssertionError as e:
             logging.error(type(e).__name__ + ": " + str(e))
