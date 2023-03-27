@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QCheckBox, QDateEdit, QRadioButton, QMessageBox, QTableWidget, QTableWidgetItem
+from PyQt5.QtCore import QDate
 import logging
 import datetime
 
@@ -99,7 +100,6 @@ class MainWindow(QWidget):
             delete_button = QPushButton('Delete', self)
             delete_button.setGeometry(750, 720, 120, 50)
             delete_button.clicked.connect(lambda: self.__processQuery(QueryType.delete))
-            delete_button.hide()
             # print button
             print_button = QPushButton('Print', self)
             print_button.setGeometry(1050, 720, 120, 50)
@@ -121,19 +121,6 @@ class MainWindow(QWidget):
             self.data_table.setColumnWidth(7, 70)
             self.data_table.cellClicked.connect(self.__loadRowToGui)
 
-            logging.critical('test data')
-            self.data_table.setRowCount(1)
-            self.data_table.setItem(0, 0, QTableWidgetItem('1'))
-            self.data_table.setItem(0, 1, QTableWidgetItem('author'))
-            self.data_table.setItem(0, 2, QTableWidgetItem('program'))
-            self.data_table.setItem(0, 3, QTableWidgetItem('true'))
-            self.data_table.setItem(0, 4, QTableWidgetItem('false'))
-            self.data_table.setItem(0, 5, QTableWidgetItem('false'))
-            self.data_table.setItem(0, 6, QTableWidgetItem('false'))
-            self.data_table.setItem(0, 7, QTableWidgetItem('true'))
-            self.data_table.setItem(0, 8, QTableWidgetItem('08.02.01'))
-            self.data_table.setItem(0, 9, QTableWidgetItem('09.03.02'))
-            logging.critical('test data end')
         except Exception as e:
             logging.error(type(e).__name__ + ": " + str(e))
 
@@ -177,18 +164,35 @@ class MainWindow(QWidget):
             logging.error(type(e).__name__ + ": " + str(e))
 
     def __str2bool(self, str):
-        return bool(str.lower() is 'true')
+        return bool(str.lower() == 'true')
 
-    def __loadRowToGui(self, row):
+    def __loadRowToGui(self):
         try:
+            row = self.data_table.currentRow()
             self.programName_value.setText(self.data_table.item(row, 2).text())
             self.isActive_value.setChecked(self.__str2bool(self.data_table.item(row, 3).text()))
             self.isFixed_value.setChecked(self.__str2bool(self.data_table.item(row, 4).text()))
             self.isImportant_value.setChecked(self.__str2bool(self.data_table.item(row, 5).text()))
             self.isDelayed_value.setChecked(self.__str2bool(self.data_table.item(row, 6).text()))
             self.isUnstable_value.setChecked(self.__str2bool(self.data_table.item(row, 7).text()))
-            self.foundDate_value.setDate(self.data_table.item(row, 8).text())
-            self.fixedDate_value.setDate(self.data_table.item(row, 9).text())
+
+            date = self.data_table.item(row, 8).text()
+            if date.lower() != 'null':
+                date = date.replace('-', '.')
+                date = date.split('.')
+                date = QDate(int(date[0]), int(date[1]), int(date[2]))
+            else:
+                date = datetime.datetime.today()
+            self.foundDate_value.setDate(date)
+
+            date = self.data_table.item(row, 9).text()
+            if date.lower() != 'null':
+                date = date.replace('-', '.')
+                date = date.split('.')
+                date = QDate(int(date[0]), int(date[1]), int(date[2]))
+            else:
+                date = datetime.datetime.today()
+            self.fixedDate_value.setDate(date)
         except Exception as e:
             logging.error(type(e).__name__ + ": " + str(e))
 
@@ -199,7 +203,7 @@ class MainWindow(QWidget):
             msgBox.setWindowTitle(title)
             msgBox.setText(text)
             msgBox.setStandardButtons(buttons)
-            msgBox.exec()
+            return msgBox.exec()
         except Exception as e:
             logging.error(type(e).__name__ + ": " + str(e))
 
@@ -235,17 +239,24 @@ class MainWindow(QWidget):
 
             elif queryType == QueryType.update:
                 if self.data_table.currentRow() is None:
-                    self.__displayMsgBox('Error: no entry selected', 'Select an entry to update from table',QMessageBox.Critical)
+                    self.__displayMsgBox('Error: no entry selected', 'Select an entry to update from table', QMessageBox.Critical)
                     raise IndexError('Row from table was not selected')
+
                 query = queryType.value.format(self.username_value.text(), self.programName_value.text(),
                     str(self.isActive_value.isChecked()), str(self.isFixed_value.isChecked()),
                     str(self.isImportant_value.isChecked()), str(self.isDelayed_value.isChecked()),
                     str(self.isUnstable_value.isChecked()), str(self.foundDate_value.date().toPyDate()),
-                    str(self.fixedDate_value.date().toPyDate()), str(self.data_table.currentRow()[0]))
+                    str(self.fixedDate_value.date().toPyDate()), self.data_table.item(self.data_table.currentRow(), 0).text())
 
             elif queryType == QueryType.delete:
-                logging.critical(f'Skipping query of type: {queryType}')
-                return
+                if self.data_table.currentRow() is None:
+                    self.__displayMsgBox('Error: no entry selected', 'Select an entry to update from table', QMessageBox.Critical, )
+                    raise IndexError('Row from table was not selected')
+                if self.__displayMsgBox('Warning: deletion', 'You are going to delete an entry!', QMessageBox.Critical, QMessageBox.Ok | QMessageBox.Cancel) == QMessageBox.Ok:
+                    query = queryType.value.format(self.data_table.item(self.data_table.currentRow(), 0).text())
+                else:
+                    logging.info('Delete cancelled')
+                    return
 
             logging.info(f'Executing query: {query}')
             self.last_query_result = self.database.processQuery(queryType, query)

@@ -31,8 +31,8 @@ def new_session():
 
         if(DEBUG_BUILD):
             logging.critical('test logic and data!')
-            database.username = 'testtest'
-            #assert database.connect('postgres', 'admin') is resultOk
+            #database.username = 'testtest'
+            assert database.connect('postgres', 'admin') is resultOk
             mainWindow = MainWindow(w, h, database)
             mainWindow.show()
             app.exec()

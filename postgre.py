@@ -10,9 +10,9 @@ from runtimeConstants import DATABASE_HOST, DATABASE_NAME, DEBUG_BUILD, resultFa
 class QueryType(enum.Enum):
     select  =   'SELECT * FROM public.\"ErrorsTable\" WHERE (...);'
     selectAll = 'SELECT * FROM public.\"ErrorsTable\";'
-    update  =   'UPDATE public.\"ErrorsTable\" SET ... WHERE id = {};'
-    insert  =   'INSERT INTO public.\"ErrorsTable\" (author_name, program_name, \"isActive\", \"isFixed\", \"isImportant\", \"isDelayed\", \"isUnstable\", found_date, fixed_date) VALUES (\'{}\', \'{}\', True, False, {}, {}, {}, \'{}\', NULL);'
-    delete  =   'DELETE WHERE id = {};'
+    update  =   'UPDATE public.\"ErrorsTable\" SET author_name = \'{}\', program_name = \'{}\', \"isActive\" = {}, \"isFixed\" = {}, \"isImportant\" = {}, \"isDelayed\" = {}, \"isUnstable\" = {}, found_date = \'{}\', fixed_date = \'{}\' WHERE id = {};'
+    insert  =   'INSERT INTO public.\"ErrorsTable\" (author_name, program_name, \"isActive\", \"isFixed\", \"isImportant\", \"isDelayed\", \"isUnstable\", found_date, fixed_date) VALUES (\'{}\', \'{}\', True, False, {}, {}, {}, \'{}\', \'NULL\');'
+    delete  =   'DELETE FROM public.\"ErrorsTable\" WHERE id = {};'
     none    =   None
 
 class Database:
