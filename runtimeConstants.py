@@ -1,8 +1,8 @@
-DEBUG_BUILD         =   False
+DEBUG_BUILD         =   True
 
 # application constants
 APPLICATION_NAME    =   "Errors Tracing Application"
-VERSION             =   "v1.1" + ("_dev" if DEBUG_BUILD else "")
+VERSION             =   "v1.2" + ("_dev" if DEBUG_BUILD else "")
 TITLE_POSTFIX       =   " - {} {}".format(APPLICATION_NAME, VERSION)
 
 # logging constants
@@ -12,7 +12,7 @@ LOGFILE_PATH        =   'application.log'
 
 # database credentials constants
 DATABASE_NAME       =   'ErrorsTracingDatabase'
-DATABASE_HOST       =   'localhost'
+DATABASE_HOST       =   '192.168.158.74'
 
 # result codes
 resultOk            =   0

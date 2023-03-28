@@ -1,10 +1,8 @@
-import enum
-from sqlite3 import DatabaseError
 import psycopg2
 import logging
 import enum
 
-from runtimeConstants import DATABASE_HOST, DATABASE_NAME, DEBUG_BUILD, resultFail, resultOk
+from runtimeConstants import DATABASE_HOST, DATABASE_NAME, resultFail, resultOk
 
 
 class QueryType(enum.Enum):
@@ -23,6 +21,7 @@ class Database:
         try:
             self.username = username_
 
+            logging.info('Trying to connect...')
             self.conn = psycopg2.connect(
                 host=DATABASE_HOST,
                 database=DATABASE_NAME,

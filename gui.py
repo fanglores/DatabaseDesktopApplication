@@ -242,6 +242,10 @@ class MainWindow(QWidget):
                     self.__displayMsgBox('Error: no entry selected', 'Select an entry to update from table', QMessageBox.Critical)
                     raise IndexError('Row from table was not selected')
 
+                if self.isFixed_value.isChecked() and self.fixedDate_value.date() < self.foundDate_value.date():
+                    self.__displayMsgBox('Error: dates incorrect', 'Fixed date cannot be earlier than found date!', QMessageBox.Critical)
+                    raise ValueError('Fixed date is earlier than Found date')
+
                 query = queryType.value.format(self.username_value.text(), self.programName_value.text(),
                     str(self.isActive_value.isChecked()), str(self.isFixed_value.isChecked()),
                     str(self.isImportant_value.isChecked()), str(self.isDelayed_value.isChecked()),

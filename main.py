@@ -28,16 +28,6 @@ def new_session():
         logging.info("Screen size is {}x{}".format(w, h))
 
         database = Database()
-
-        if(DEBUG_BUILD):
-            logging.critical('test logic and data!')
-            #database.username = 'testtest'
-            assert database.connect('postgres', 'admin') is resultOk
-            mainWindow = MainWindow(w, h, database)
-            mainWindow.show()
-            app.exec()
-            exit()
-
         loginWindow = LoginWindow(w, h, database)
         loginWindow.show()
         app.exec()
